@@ -17,15 +17,26 @@ int cantidadTomates = 350, cantidadRepollo = 300, cantidadPapas = 250;
 int cantidadMolida = 140, cantidadCerdo = 150, cantidadAsar = 180;
 int cantidadNacional = 110, cantidadExtranjera = 100, cantidadVino = 200, cantidadVodka = 200;
 
-// Totales
-float totalVenta = 0;
+// Contadores 
+int contadorCarnes = 0; // Contador de carne para descuento
+int contadorCervezas = 0; // Contador de cerveza para descuento (¡Recuerda aumentarlo en tu lógica si deseas usar el beneficio Six-Pack!)
+int contadorLicoresGeneral = 0;
 
-// Prototipos
+// Variables globales para cálculos financieros
+float totalDescuentos = 0;
+float subTotalNeto = 0;
+float isvGeneral = 0;
+float isvLicores = 0;
+float totalPagar = 0;
+
+// Prototipos de funciones
 void registrarCliente();
 void menuVerduras();
 void menuCarnes();
 void menuLicores();
 void menuInventario();
+void descuentos();
+void impuestos();
 void mostrarFactura();
 
 int main() {
@@ -62,7 +73,7 @@ int main() {
     return 0;
 }
 
-// Módulos iniciales temporales
+
 void registrarCliente() {
      cout << "\n===== REGISTRO DEL CLIENTE =====\n";
 
@@ -79,13 +90,22 @@ void registrarCliente() {
     } while (edadCliente < 6 || edadCliente > 105);
     
     do {
-        cout << "Ingrese el tipo de cliente: ";
+        cout << "Ingrese el tipo de cliente (1: Estrella, 2: Regular, 3: Nuevo): ";
         cin >> tipoCliente;
 
         if (tipoCliente < 1 || tipoCliente > 3) {
-            cout << "ERROR:El tipo de cliente que ingreso es Invalido.\n";
+            cout << "ERROR: El tipo de cliente que ingreso es Invalido.\n";
         }
     } while (tipoCliente < 1 || tipoCliente > 3);
+
+    do {
+        cout << "\nIngrese el dia de la semana de la compra\n";
+        cout << "(1:Lunes, 2:Martes, 3:Miercoles, 4:Jueves, 5:Viernes, 6:Sabado, 7:Domingo): ";
+        cin >> diaSemana;
+        if(diaSemana < 1 || diaSemana > 7) {
+            cout << "ERROR: Dia invalido.\n";
+        }
+    } while (diaSemana < 1 || diaSemana > 7);
 
      cout << "\nCliente registrado correctamente.\n";
 }
@@ -95,8 +115,8 @@ void menuVerduras() {
 
     cout << "\n===== BIENVENIDOS AL AREA DE VERDURAS =====\n";
     cout << "1. Tomates - L.10 - Disponible: " << cantidadTomates << endl;
-    cout << "2. Repollo     - L.15 - Disponible: " << cantidadRepollo << endl;
-    cout << "3. Papas  - L.17 - Disponible: " << cantidadPapas << endl;
+    cout << "2. Repollo - L.15 - Disponible: " << cantidadRepollo << endl;
+    cout << "3. Papas   - L.17 - Disponible: " << cantidadPapas << endl;
     cout << "Seleccione producto: ";
     cin >> opcionVL;
 
@@ -122,7 +142,7 @@ void menuVerduras() {
         case 2:
             if (cantidad <= cantidadRepollo) {
                 cantidadRepollo -= cantidad;
-                totalVerduras += cantidad * 17;
+                totalVerduras += cantidad * 15; // Corregido de 17 a 15 según el menú
                 cout << "Repollo agregado correctamente.\n";
             } else {
                 cout << "No hay suficiente inventario.\n";
@@ -148,9 +168,9 @@ void menuCarnes() {
      int opcionVL, cantidad;
 
     cout << "\n===== BIENVENIDO AL AREA DE CARNES =====\n";
-    cout << "1. Carne Molida - L.50 - Disponible: " << cantidadMolida << endl;
-    cout << "2. Carne de Cerdo     - L.70 - Disponible: " << cantidadCerdo << endl;
-    cout << "3. Carne para Asar  - L.75 - Disponible: " << cantidadAsar << endl;
+    cout << "1. Carne Molida    - L.50 - Disponible: " << cantidadMolida << endl;
+    cout << "2. Carne de Cerdo  - L.70 - Disponible: " << cantidadCerdo << endl;
+    cout << "3. Carne para Asar - L.75 - Disponible: " << cantidadAsar << endl;
     cout << "Seleccione producto: ";
     cin >> opcionVL;
 
@@ -161,6 +181,7 @@ void menuCarnes() {
         cout << "ERROR: Cantidad no valida.\n";
         return;
     }
+    if (opcionVL >= 1 && opcionVL <= 3) contadorCarnes += cantidad; 
 
     switch (opcionVL) {
         case 1:
@@ -176,7 +197,7 @@ void menuCarnes() {
         case 2:
             if (cantidad <= cantidadCerdo) {
                 cantidadCerdo -= cantidad;
-                totalVerduras += cantidad * 70;
+                totalCarnes += cantidad * 70;
                 cout << "Carne de Cerdo agregada correctamente.\n";
             } else {
                 cout << "No hay suficiente inventario.\n";
@@ -186,7 +207,7 @@ void menuCarnes() {
         case 3:
             if (cantidad <= cantidadAsar) {
                 cantidadAsar -= cantidad;
-                totalVerduras += cantidad * 75;
+                totalCarnes += cantidad * 75;
                 cout << "Carne para Asar agregada correctamente.\n";
             } else {
                 cout << "No hay suficiente inventario.\n";
@@ -201,86 +222,88 @@ void menuCarnes() {
 void menuLicores(){
     if(edadCliente < 18 ){
         cout << "El area 3 no esta disponible para menores de edad. \n";
-    }else {
-    int opcionVL, cantidad;
-     cout << "\n===== BIENVENIDO AL AREA DE LICORES =====\n";
-    cout << "1. Cerveza Nacional - L.50 - Disponible: " << cantidadNacional << endl;
-    cout << "2. Cerveza Extranjera    - L.80 - Disponible: " << cantidadExtranjera << endl;
-    cout << "3. Vino  - L.200 - Disponible: " << cantidadVino << endl;
-    cout << "4. Vodka  - L.100 - Disponible: " << cantidadVodka << endl;
-    cout << "Seleccione producto: ";
-    cin >> opcionVL;
+    } else {
+        int opcionVL, cantidad;
+        cout << "\n===== BIENVENIDO AL AREA DE LICORES =====\n";
+        cout << "1. Cerveza Nacional  - L.50  - Disponible: " << cantidadNacional << endl;
+        cout << "2. Cerveza Extranjera- L.80  - Disponible: " << cantidadExtranjera << endl;
+        cout << "3. Vino              - L.200 - Disponible: " << cantidadVino << endl;
+        cout << "4. Vodka             - L.100 - Disponible: " << cantidadVodka << endl;
+        cout << "Seleccione producto: ";
+        cin >> opcionVL;
 
-    cout << "Ingrese cantidad: ";
-    cin >> cantidad;
+        cout << "Ingrese cantidad: ";
+        cin >> cantidad;
 
-    if (cantidad <= 0) {
-        cout << "ERROR: Cantidad no valida.\n";
-        return;
+        if (cantidad <= 0) {
+            cout << "ERROR: Cantidad no valida.\n";
+            return;
+        }
+        
+        if (opcionVL >= 1 && opcionVL <= 4) contadorLicoresGeneral += cantidad;
+        if (opcionVL == 1 || opcionVL == 2) contadorCervezas += cantidad; // Registra cervezas para el Six-Pack
+
+        switch (opcionVL) {
+            case 1:
+                if (cantidad <= cantidadNacional) {
+                    cantidadNacional -= cantidad;
+                    totalLicores += cantidad * 50;
+                    cout << "Cerveza Nacional agregada correctamente.\n";
+                } else {
+                    cout << "No hay suficiente inventario.\n";
+                }
+                break;
+
+            case 2:
+                if (cantidad <= cantidadExtranjera) {
+                    cantidadExtranjera -= cantidad;
+                    totalLicores += cantidad * 80;
+                    cout << "Cerveza Extranjera agregada correctamente.\n";
+                } else {
+                    cout << "No hay suficiente inventario.\n";
+                }
+                break;
+
+            case 3:
+                if (cantidad <= cantidadVino) {
+                    cantidadVino -= cantidad;
+                    totalLicores += cantidad * 200;
+                    cout << "Vinos agregados correctamente.\n";
+                } else {
+                    cout << "No hay suficiente inventario.\n";
+                }
+                break;
+                
+             case 4:
+                if (cantidad <= cantidadVodka) {
+                    cantidadVodka -= cantidad;
+                    totalLicores += cantidad * 100;
+                    cout << "Vodka agregado correctamente.\n";
+                } else {
+                    cout << "No hay suficiente inventario.\n";
+                }
+                break;
+
+            default:
+                cout << "Opcion no valida.\n";
+        }        
     }
-
-    switch (opcionVL) {
-        case 1:
-            if (cantidad <= cantidadNacional) {
-                cantidadNacional -= cantidad;
-                totalLicores += cantidad * 50;
-                cout << "Cerveza Nacional agregada correctamente.\n";
-            } else {
-                cout << "No hay suficiente inventario.\n";
-            }
-            break;
-
-        case 2:
-            if (cantidad <= cantidadExtranjera) {
-                cantidadExtranjera -= cantidad;
-                totalLicores += cantidad * 80;
-                cout << "Cerveza Extranjera agregada correctamente.\n";
-            } else {
-                cout << "No hay suficiente inventario.\n";
-            }
-            break;
-
-        case 3:
-            if (cantidad <= cantidadVino) {
-                cantidadVino -= cantidad;
-                totalLicores += cantidad * 200;
-                cout << "Vinos agregados correctamente.\n";
-            } else {
-                cout << "No hay suficiente inventario.\n";
-            }
-            break;
-            
-         case 4:
-            if (cantidad <= cantidadVodka) {
-                cantidadVodka -= cantidad;
-                totalLicores += cantidad * 100;
-                cout << "Vodka agregado correctamente.\n";
-            } else {
-                cout << "No hay suficiente inventario.\n";
-            }
-            break;
-
-        default:
-            cout << "Opcion no valida.\n";
-    }        
-}
-   
 }
 
 void menuInventario() {
    int opcionInv, cantidad;
 
     cout << "\n===== INVENTARIO ACTUAL =====\n";
-    cout << "1. Tomates:     " << cantidadTomates << endl;
-    cout << "2. Repollo:         " << cantidadRepollo << endl;
-    cout << "3. Papas:      " << cantidadPapas << endl;
-    cout << "4. Carne Molida:       " << cantidadMolida << endl;
-    cout << "5. Carne de Cerdo:  " << cantidadCerdo << endl;
+    cout << "1. Tomates:           " << cantidadTomates << endl;
+    cout << "2. Repollo:           " << cantidadRepollo << endl;
+    cout << "3. Papas:             " << cantidadPapas << endl;
+    cout << "4. Carne Molida:      " << cantidadMolida << endl;
+    cout << "5. Carne de Cerdo:    " << cantidadCerdo << endl;
     cout << "6. Carne para Asar:   " << cantidadAsar << endl;
-    cout << "7. Cerveza Nacional:   " << cantidadNacional << endl;
-    cout << "8. Cerveza Extranjera:   " << cantidadExtranjera << endl;
-    cout << "9. Vino:   " << cantidadVino << endl;
-    cout << "10. Vodka:   " << cantidadVodka << endl;
+    cout << "7. Cerveza Nacional:  " << cantidadNacional << endl;
+    cout << "8. Cerveza Extranjera:" << cantidadExtranjera << endl;
+    cout << "9. Vino:              " << cantidadVino << endl;
+    cout << "10. Vodka:            " << cantidadVodka << endl;
 
     cout << "\nSeleccione producto para ingresar inventario: ";
     cin >> opcionInv;
@@ -294,7 +317,7 @@ void menuInventario() {
     }
 
     switch (opcionInv) {
-        case 1: cantidadTomates+= cantidad; break;
+        case 1: cantidadTomates += cantidad; break;
         case 2: cantidadRepollo += cantidad; break;
         case 3: cantidadPapas += cantidad; break;
         case 4: cantidadMolida += cantidad; break;
@@ -310,14 +333,27 @@ void menuInventario() {
     }
 
     cout << "Inventario actualizado correctamente.\n";
+
 }
 
+void menuVerduras(){
+    cout<< "En proceso";
+}
+void menuCarnes(){
+     cout<< "En proceso";
+}
+void menuLicores(){
+     cout<< "En proceso";
+}
+void menuInventario(){
+    cout<< "En proceso";
+}
 void descuentos(){
-    cout << "Descuentos \n";
+    cout<< "En proceso";
 }
 void impuestos(){
-    cout << "Impuestos \n";
+    cout<< "En proceso";
 }
-void mostrarFactura() {
-    cout << "Modulo factura pendiente de desarrollo.\n";
+void mostrarFactura(){
+    cout<< "En proceso";
 }
