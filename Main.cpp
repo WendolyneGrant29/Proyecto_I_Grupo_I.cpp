@@ -337,8 +337,53 @@ void menuInventario() {
 }
 
 void descuentos(){
-    cout<< "En proceso";
+    float descuentoCEstrella = 0, descuentoCRegular = 0, descuentoCNuevo = 0;
+    float descuentoLM = 0, descuentoSegCarne = 0, descuentoVTercera = 0, descuentoSixPack = 0;
+
+    if (tipoCliente == 1) {
+        descuentoCEstrella = (totalVerduras + totalCarnes) * 0.04;
+    }
+    if (tipoCliente == 2) {
+        descuentoCRegular = totalCarnes * 0.03;
+    }
+    if (tipoCliente == 3) {
+        descuentoCNuevo = totalLicores * 0.02;
+    }
+    if (diaSemana == 1 || diaSemana == 3) {
+        descuentoLM = (totalVerduras + totalCarnes + totalLicores) * 0.03;
+    }
+    if (contadorCarnes == 2) {
+        descuentoSegCarne = 25.00;
+    }
+    if (diaSemana == 5 && edadCliente >= 65) {
+        descuentoVTercera = (totalVerduras + totalCarnes + totalLicores) * 0.10;
+    }
+    if (contadorCervezas >= 6) {
+        descuentoSixPack = 10.00;
+    }
+
+    totalDescuentos = descuentoCEstrella + descuentoCRegular + descuentoCNuevo + 
+                      descuentoLM + descuentoSegCarne + descuentoVTercera + descuentoSixPack;
+
+    float subTotalGeneral = totalVerduras + totalCarnes + totalLicores;
+    subTotalNeto = subTotalGeneral - totalDescuentos;
+
+    cout << "\n--- DETALLE DE DESCUENTOS ---\n";
+    if (descuentoCEstrella > 0) cout << "Desc. Cliente Estrella:  -L. " << descuentoCEstrella << endl;
+    if (descuentoCRegular > 0)  cout << "Desc. Cliente Regular:   -L. " << descuentoCRegular << endl;
+    if (descuentoCNuevo > 0)    cout << "Desc. Cliente Nuevo:     -L. " << descuentoCNuevo << endl;
+    if (descuentoLM > 0)        cout << "Desc. Lunes o Miercoles: -L. " << descuentoLM << endl;
+    if (descuentoSegCarne > 0)  cout << "Desc. Segunda Carne 50%: -L. " << descuentoSegCarne << endl;
+    if (descuentoVTercera > 0)  cout << "Desc. Tercera Edad (Vi): -L. " << descuentoVTercera << endl;
+    if (descuentoSixPack > 0)   cout << "Desc. Pack de Cervezas:  -L. " << descuentoSixPack << endl;
+    if (totalDescuentos == 0)   cout << "(No aplico a ningun descuento hoy)\n";
+    
+    cout << "-----------------------------------------\n";
+    cout << "Subtotal General Compras:   L. " << subTotalGeneral << endl;
+    cout << "Total Descuentos Aplicados: L. " << totalDescuentos << endl;
+    cout << "Subtotal Neto (con desc):   L. " << subTotalNeto << endl;
 }
+
 void impuestos(){
     cout<< "En proceso";
 }
