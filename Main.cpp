@@ -340,8 +340,27 @@ void descuentos(){
     cout<< "En proceso";
 }
 void impuestos(){
-    cout<< "En proceso";
+    float subTotalOriginal = totalVerduras + totalCarnes + totalLicores;
+    
+    if (subTotalOriginal > 0) {
+        // Obtenemos la proporción que representa cada sección para aplicar los descuentos justamente
+        float proporcionVC = (totalVerduras + totalCarnes) / subTotalOriginal;
+        float proporcionLicores = totalLicores / subTotalOriginal;
+
+        float parteNetoVC = subTotalNeto * proporcionVC;
+        float parteNetoLicores = subTotalNeto * proporcionLicores;
+
+        // Tasas impositivas aplicadas al subtotal neto proporcional
+        isvGeneral = parteNetoVC * 0.15;      // 15% ISV General
+        isvLicores = parteNetoLicores * 0.18;  // 18% Total en Licores (15% + 3% Adicional)
+    } else {
+        isvGeneral = 0;
+        isvLicores = 0;
+    }
+
+    totalPagar = subTotalNeto + isvGeneral + isvLicores;
 }
+
 void mostrarFactura(){
     cout<< "En proceso";
 }
