@@ -336,18 +336,6 @@ void menuInventario() {
 
 }
 
-void menuVerduras(){
-    cout<< "En proceso";
-}
-void menuCarnes(){
-     cout<< "En proceso";
-}
-void menuLicores(){
-     cout<< "En proceso";
-}
-void menuInventario(){
-    cout<< "En proceso";
-}
 void descuentos(){
     cout<< "En proceso";
 }
