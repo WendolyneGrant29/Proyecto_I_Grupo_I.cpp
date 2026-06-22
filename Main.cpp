@@ -406,5 +406,41 @@ void impuestos(){
     totalPagar = subTotalNeto + isvGeneral + isvLicores;
 }
 void mostrarFactura(){
-    cout<< "En proceso";
+     if ((totalVerduras + totalCarnes + totalLicores) == 0) {
+        cout << "\nNo hay productos en el carrito para facturar.\n\n";
+        return;
+    }
+
+
+    // Llamadas en cadena obligatorias para procesar los números reales
+    descuentos();
+    impuestos();
+
+    cout << "\n=============================================\n";
+    cout << "                 PUMA MARKET                 \n";
+    cout << "               FACTURA CONSUMO               \n";
+    cout << "=============================================\n";
+    cout << "Cliente: " << nombreCliente << endl;
+    cout << "Edad:    " << edadCliente << " anos" << endl;
+    cout << "Tipo de Cliente: " << tipoCliente << endl;
+    cout << "---------------------------------------------\n";
+    cout << "DETALLE DE COMPRAS:\n";
+    if(totalVerduras > 0) cout << " - Area de Verduras:         L. " << totalVerduras << endl;
+    if(totalCarnes > 0)   cout << " - Area de Carnes:           L. " << totalCarnes << endl;
+    if(totalLicores > 0)  cout << " - Area de Licores:          L. " << totalLicores << endl;
+    cout << "---------------------------------------------\n";
+    cout << "Subtotal Bruto:              L. " << (totalVerduras + totalCarnes + totalLicores) << endl;
+    cout << "Total Descuentos:           -L. " << totalDescuentos << endl;
+    cout << "Subtotal Neto:               L. " << subTotalNeto << endl;
+    cout << "ISV General (15%):           L. " << isvGeneral << endl;
+    cout << "ISV Licores (18%):           L. " << isvLicores << endl;
+    cout << "=============================================\n";
+    cout << "TOTAL A PAGAR:               L. " << totalPagar << endl;
+    cout << "=============================================\n";
+    cout << "      Gracias por su compra en Puma Market   \n";
+    cout << "=============================================\n\n";
+    
+    // Opcional: Reiniciar totales por si quieren simular otra compra tras facturar
+    totalVerduras = 0; totalCarnes = 0; totalLicores = 0;
+    contadorCarnes = 0; contadorCervezas = 0; contadorLicoresGeneral = 0;
 }
